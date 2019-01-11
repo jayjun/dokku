@@ -1,6 +1,6 @@
 # Troubleshooting
 
-__Symptom:__ I deployed my app but I am getting the default nginx page
+__Symptom:__ I deployed my app but I am getting the default nginx page.
 
 __Solution:__
 
@@ -11,7 +11,7 @@ nginx -t
 ## nginx: [emerg] could not build the server_names_hash, you should increase server_names_hash_bucket_size: 32
 ```
 
-If you get a similar error just edit __/etc/nginx/nginx.conf__ and add the following line to your http section:
+If you get a similar error, just edit `/etc/nginx/nginx.conf` and add the following line to your `http` section:
 
 ```nginx
 http {
@@ -35,7 +35,7 @@ Save the file and try stopping nginx and starting it again:
 
 ***
 
-__Symptom:__ I want to deploy my app, but while pushing I get the following error
+__Symptom:__ I want to deploy my app, but while pushing I get the following error:
 
     ! [remote rejected] master -> master (pre-receive hook declined)
 
@@ -50,30 +50,30 @@ To enable Dokku tracing, simply run the following command:
 dokku trace on
 ```
 
-In versions older than 0.3.9, you can create a `/home/dokku/dokkurc` file containing the following :
+In versions older than 0.3.9, you can create a `/home/dokku/dokkurc` file containing the following:
 
 ```shell
 export DOKKU_TRACE=1
 ```
 
-This will trace all of dokku's activity. If this does not help you, create a [gist](https://gist.github.com) containing the full log, and create an issue.
+This will trace all of Dokku's activity. If this does not help you, create a [gist](https://gist.github.com) containing the full log, and create an issue.
 
 ***
 
-__Symptom:__ I get the aforementioned error in the build phase (after turning on Dokku tracing)
+__Symptom:__ I get the aforementioned error in the build phase (after turning on Dokku tracing).
 
   Most errors that happen in this phase are due to transient network issues (either locally or remotely) buildpack bugs.
 
 __Solution (Less solution, more helpful troubleshooting steps):__
 
-  Find the failed phase's container image (*077581956a92* in this example)
+  Find the failed phase's container image (`077581956a92` in this example).
 
 ```shell
 docker ps -a  | grep build
 ## 94d9515e6d93        077581956a92                "/build"       29 minutes ago      Exited (0) 25 minutes ago                       cocky_bell
 ```
 
-  Start a new container with the failed image and poke around (i.e. ensure you can access the internet from within the container or attempt the failed command, if known)
+  Start a new container with the failed image and poke around (i.e. ensure you can access the internet from within the container or attempt the failed command, if known).
 
 ```shell
 docker run -ti 077581956a92 /bin/bash
@@ -84,38 +84,37 @@ tar tzf node-v0.10.30-linux-x64.tar.gz
 ## ...
 ```
 
-  Sometimes (especially on DO) deploying again seems to get past these seemingly transient issues
-  Additionally we've seen issues if changing networks that have different DNS resolvers. In this case, you can run the following to update your resolv.conf
+  Sometimes (especially on Digital Ocean) deploying again seems to get past these seemingly transient issues. Additionally we've seen issues if changing networks that have different DNS resolvers. In this case, you can run the following to update your `resolv.conf`.
 
 ```shell
 resolvconf -u
 ```
 
-Please see https://github.com/dokku/dokku/issues/841 and https://github.com/dokku/dokku/issues/649
+Please see https://github.com/dokku/dokku/issues/841 and https://github.com/dokku/dokku/issues/649.
 
 ***
 
-__Symptom:__ I want to deploy my app but I am getting asked for the password of the git user and the error message
+__Symptom:__ I want to deploy my app but I am getting asked for the password of the git user and the error message:
 
     fatal: 'NAME' does not appear to be a git repository
     fatal: Could not read from remote repository.
 
 __Solution:__
 
-You get asked for a password because your ssh secret key can't be found. This may happen if the private key corresponding to the public key you added with `sshcommand acl-add` is not located in the default location `~/.ssh/id_rsa`.
+You get asked for a password because your SSH secret key can't be found. This may happen if the private key corresponding to the public key you added with `sshcommand acl-add` is not located in the default location `~/.ssh/id_rsa`.
 
-You have to point ssh to the correct secret key for your domain name. Add the following to your `~/.ssh/config`:
+You have to point SSH to the correct secret key for your domain name. Add the following to your `~/.ssh/config`:
 
 ```ini
 Host DOKKU_HOSTNAME
   IdentityFile "~/.ssh/KEYNAME"
 ```
 
-Also see [issue #116](https://github.com/dokku/dokku/issues/116)
+Also see [issue #116](https://github.com/dokku/dokku/issues/116).
 
 ***
 
-__Symptom:__ I successfully deployed my application with no deployment errors and receiving Bad Gateway when attempting to access the application
+__Symptom:__ I successfully deployed my application with no deployment errors and receiving **Bad Gateway** when attempting to access the application.
 
 __Solution:__
 
@@ -127,11 +126,11 @@ When specifying your port you may want to use something similar to:
 var port = process.env.PORT || 3000
 ```
 
-Please see https://github.com/dokku/dokku/issues/282
+Please see https://github.com/dokku/dokku/issues/282.
 
 ***
 
-__Symptom:__ Deployment fails because of slow internet connection, messages shows `gzip: stdin: unexpected end of file`
+__Symptom:__ Deployment fails because of slow internet connection, messages show `gzip: stdin: unexpected end of file`.
 
 __Solution:__
 
@@ -153,9 +152,9 @@ dokku config:set --global CURL_TIMEOUT=1200
 dokku config:set --global CURL_CONNECT_TIMEOUT=180
 ```
 
-Please see https://github.com/dokku/dokku/issues/509
+Please see https://github.com/dokku/dokku/issues/509.
 
-Another reason for this error (although it may respond immediately ruling out a timeout issue) may be because you've set the config setting `SSL_CERT_FILE`. Using a config setting with this key interferes with the buildpack's ability to download it's dependencies, so you must rename the config setting to something else, e.g. `MY_APP_SSL_CERT_FILE`.
+Another reason for this error (although it may respond immediately ruling out a timeout issue) may be because you've set the config setting `SSL_CERT_FILE`. Using a config setting with this key interferes with the buildpack's ability to download its dependencies, so you must rename the config setting to something else, e.g. `MY_APP_SSL_CERT_FILE`.
 
 ***
 
@@ -163,7 +162,7 @@ __Symptom:__ Build fails with `Killed` message.
 
 __Solution:__
 
-This generally occurs when the server runs out of memory. You can either add more ram to your server or setup swap space. The follow script will create 2gb of swap space.
+This generally occurs when the server runs out of memory. You can either add more ram to your server or setup swap space. The following script will create 2 GB of swap space.
 
 ```shell
 sudo install -o root -g root -m 0600 /dev/null /swapfile
@@ -177,7 +176,7 @@ echo vm.swappiness = 10 | sudo tee -a /etc/sysctl.conf
 
 ***
 
-__Symptom:__ I successfully deployed my application with no deployment errors but I'm receiving Connection Timeout when attempting to access the application.
+__Symptom:__ I successfully deployed my application with no deployment errors but I'm receiving **Connection Timeout** when attempting to access the application.
 
 __Solution:__
 
